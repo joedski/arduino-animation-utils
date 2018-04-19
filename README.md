@@ -3,7 +3,7 @@ Arduino Animation Timing
 
 Some simple utilities I use a lot for Arduino based animations.
 
-> NOTE: I write things as structs because I tend to write public-by-default and because I haven't outgrown my C-ish habits.  I also think that most things are usable by just looking at them.  If you change them and weird things happen, well, you've no one to blame but yourself.
+> NOTE: Why structs?  ... habit, I think.  And I tend to view them as basically "bags of data with funny named functions" rather than "pieces of hidden state with funny named functions".
 
 
 
@@ -19,4 +19,4 @@ If you want to just run your animation as fast as the arduino can manage without
 
 ### ProgressTimingModel
 
-The class `Animation_ProgressTimingModel` holds the logic for timing progress-based animations.
+The class `Animation_ProgressTimingModel` holds the logic for progress-based animations.  Used in conjuction with an instance of `Animation_LoopTicker` to calculate the time deltas, you can do cyclic or one-shot animations that keep about the same timing regardless of how long it takes a loop iteration to actually execute.  Very useful in the face of things like NeoPixels and servos which can take a bit of time to properly drive.
