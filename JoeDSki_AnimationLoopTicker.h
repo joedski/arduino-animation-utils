@@ -1,9 +1,9 @@
-#ifndef __ANIMATION_TIMING__ANIMATION_LOOP_TICKER__
-#define __ANIMATION_TIMING__ANIMATION_LOOP_TICKER__ yay
+#ifndef __JOEDSKI__ANIMATION_LOOP_TICKER__
+#define __JOEDSKI__ANIMATION_LOOP_TICKER__ yay
 
 #include <Arduino.h>
 
-struct Animation_LoopTicker {
+struct JoeDSki_AnimationLoopTicker {
   /**
    * The desired animation interval in milliseconds.
    * 17 (60fps) or 33 (30fps) are good values.
@@ -39,15 +39,12 @@ struct Animation_LoopTicker {
 
 
   /**
-   * Construct a LoopTicker with 0 interval, i.e. in free-wheeling mode.
-   */
-  Animation_LoopTicker();
-
-  /**
    * Construct a LoopTicker with a given interval to aim for.
+   * If called with no interval, a default of 0 will be used, meaning
+   * the ticker operates in free-wheeling mode and will never delay the animation.
    * @param long The fixed interval to aim for.
    */
-  Animation_LoopTicker(long);
+  JoeDSki_AnimationLoopTicker(long);
 
 
   /**

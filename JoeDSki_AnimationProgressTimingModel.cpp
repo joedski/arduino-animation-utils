@@ -1,10 +1,20 @@
-#include "Animation_TimingModel.h"
+#include "JoeDSki_AnimationProgressTimingModel.h"
 
 
-int32_t speculativeProgressForTimeDelta(struct AnimationTimingModel &model, uint32_t timeDelta);
+int32_t speculativeProgressForTimeDelta(struct JoeDSki_AnimationProgressTimingModel &model, uint32_t timeDelta);
 
 
-void AnimationTimingModel::increment(uint32_t timeDelta) {
+JoeDSki_AnimationProgressTimingModel::JoeDSki_AnimationProgressTimingModel(
+  uint32_t normalDuration,
+  int16_t rate100 = 100,
+  uint16_t progress = 0
+)
+  : normalDuration(normalDuration)
+  , rate100(rate100)
+  , progress(progress)
+{}
+
+void JoeDSki_AnimationProgressTimingModel::increment(uint32_t timeDelta) {
   // Skip immediately on some cases.
   // Assumes timeDelta is left unsigned and > 0.
   if (
@@ -27,7 +37,7 @@ void AnimationTimingModel::increment(uint32_t timeDelta) {
   }
 }
 
-void AnimationTimingModel::incrementCyclic(uint32_t timeDelta) {
+void JoeDSki_AnimationProgressTimingModel::incrementCyclic(uint32_t timeDelta) {
   int32_t nextProgressSpeculative = speculativeProgressForTimeDelta(*this, timeDelta);
 
   // Put things into positive territory before cycling via mod.
@@ -45,7 +55,7 @@ void AnimationTimingModel::incrementCyclic(uint32_t timeDelta) {
  * Calculates the speculative next progress for a given time delta,
  * upgrading progress to an int32_t (signed!) to account for over/underflows.
  */
-int32_t speculativeProgressForTimeDelta(struct AnimationTimingModel &model, uint32_t timeDelta) {
+int32_t speculativeProgressForTimeDelta(struct JoeDSki_AnimationProgressTimingModel &model, uint32_t timeDelta) {
   int16_t normalProgressIcrement = (int16_t)(ANIMATION_PROGRESS_MAX * timeDelta / model.normalDuration);
   int32_t progressIncrement = (
     (int32_t)normalProgressIcrement

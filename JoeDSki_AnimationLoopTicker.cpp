@@ -1,18 +1,14 @@
-#include "Animation_LoopTicker.h"
+#include "JoeDSki_AnimationLoopTicker.h"
 
-Animation_LoopTicker::Animation_LoopTicker()
+JoeDSki_AnimationLoopTicker::JoeDSki_AnimationLoopTicker(long interval = 0)
+  // Not really much to do once we've assigned this value, hence no body.
   // If you don't supply an interval, we just use 0.
   // This means we always overrun and never delay even if you call delay(),
   // but is useful if you don't care about maintaining a steady framerate.
-  : interval(0)
-{}
-
-Animation_LoopTicker::Animation_LoopTicker(long interval)
-  // Not really much to do once we've assigned this value.
   : interval(interval)
 {}
 
-void Animation_LoopTicker::init() {
+void JoeDSki_AnimationLoopTicker::init() {
   // Set the initial value for lastMillis so we can track the true delta later.
   lastMillis = millis();
 
@@ -22,7 +18,7 @@ void Animation_LoopTicker::init() {
   delta = interval;
 }
 
-void Animation_LoopTicker::tick() {
+void JoeDSki_AnimationLoopTicker::tick() {
   long nextMillis = millis();
   long actualLoopDuration = nextMillis - lastMillis;
   remainingDelay = interval - actualLoopDuration;
@@ -30,7 +26,7 @@ void Animation_LoopTicker::tick() {
   delta = interval + (didOverrun ? -remainingDelay : 0);
 }
 
-void Animation_LoopTicker::delay() {
+void JoeDSki_AnimationLoopTicker::delay() {
   if (didOverrun) {
     return;
   }
