@@ -68,3 +68,69 @@ void loop() {
 ### ProgressTimingModel
 
 The class `JoeDSki_AnimationProgressTimingModel` holds the logic for progress-based animations.  Used in conjuction with an instance of `JoeDSki_AnimationLoopTicker` to calculate the time deltas, you can do cyclic or one-shot animations that keep about the same timing regardless of how long it takes a loop iteration to actually execute.  Very useful in the face of things like NeoPixels and servos which can take a bit of time to properly drive.
+
+Here's an example with a single NeoPixel that ramps up and down:
+
+```cpp
+#include <Adafruit_NeoPixel.h>
+#include <JoeDSki_AnimationLoopTicker.h>
+#include <JoeDSki_AnimationProgressTimingModel.h>
+#include <stdint.h>
+
+#define PIXEL_COUNT 6
+#define NEOPIXEL_PIN 6
+
+// Just one lonely neopixel :(
+Adafruit_NeoPixel neoPixelStrip = Adafruit_NeoPixel(PIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+
+// 60 ticks per second.
+JoeDSki_AnimationLoopTicker ticker(17);
+
+struct RGBColor {
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+};
+
+struct PixelState {
+  RGBColor color;
+  JoeDSki_AnimationProgressTimingModel timing;
+
+  RGBColor getFadedColor() {
+    uint8_t fade = (
+      timing.progress > (ANIMATION_PROGRESS_MAX >> 1)
+        ? UINT8_MAX - (ANIMATION_PROGRESS_MAX >> 7)
+        : ANIMATION_PROGRESS_MAX >> 7
+    );
+    return {
+      .r = color.r * fade >> 8,
+      .g = color.g * fade >> 8,
+      .b = color.b * fade >> 8,
+    };
+  }
+} lonelyPixel = {
+  // Some sort of color...
+  .color = {255, 32, 96},
+  // Animation goes for 1 second.
+  .timing = JoeDSki_AnimationProgressTimingModel(1000)
+};
+
+void setup() {
+  ticker.init();
+}
+
+void loop() {
+  // Render
+  RGBColor fadedColor = lonelyPixel.getFadedColor();
+  neoPixelStrip.setPixelColor(0, neoPixelStrip.Color(fadedColor.r, fadedColor.g, fadedColor.b));
+  neoPixelStrip.show();
+  neoPixelStrip.setPixelColor(i, 0);
+
+  // Update
+  lonelyPixel.timing.incrementCyclic(ticker.delta);
+
+  // Timekeeping
+  ticker.tick();
+  ticker.delay();
+}
+```
