@@ -5,6 +5,15 @@
 
 
 // Represents the linear progress of an animation.
+/**
+ * AnimationProgressTimingModel represents the linear progress of
+ * a one-shot or cyclic animation with a given duration.
+ *
+ * It can be used for things like pulsing animations, a global timeline,
+ * etc.
+ *
+ * NOTE: It should not be used for purely procedural animations of no fixed duration.
+ */
 struct JoeDSki_AnimationProgressTimingModel {
   /**
    * The normal duration of this animation in milliseconds.
@@ -39,23 +48,37 @@ struct JoeDSki_AnimationProgressTimingModel {
 
   // ======== Mutations
 
-  // Increments the timing model by some time delta, according to its rate.
+  /**
+   * Increments the timing model progress, according to its rate,
+   * by some amount of milliseconds.
+   * If the progress would increment past the end, it would instead stop at
+   * the maximum value of UINT16_MAX, and if progress would decrement past the beginning,
+   * it would instead stop at 0.
+   * @param uint32_t delta How many milliseconds to advance the animation by.
+   */
   void increment(uint32_t);
 
-  // Same as increment, but rather than stopping at ANIMATION_PROGRESS_MAX or 0,
-  // the animation will instead under/overflow to the other end.
-  // i.e. if progress == ANIMATION_PROGRESS_MAX - 1,
-  //   then progress += 2 will result in progress == 2.
-  // The same if progress ends up below 0.
+  /**
+   * Like the increment method, increments the timing model progress,
+   * according to its rate, by some amount of milliseconds,
+   * with the added behavior of cycling progress around at either end.
+   * Thus, if progress would increment past the end, it cycles back to the beginning,
+   * and if progress would decrement past the beginning, it cycles back
+   * to the end.
+   * @param uint32_t delta How many milliseconds to advance the animation by.
+   */
   void incrementCyclic(uint32_t);
 
 
   // ======== Derivers
 
-  // Convenience method returning the progress as an unsigned 8-bit,
-  // usually for LUTs and such.
+  /**
+   * Convenience method for getting the progress as uint8_t/uchar
+   * because sometimes you just need that.
+   * @return Progress as an unsigned 8-bit number.
+   */
   uint8_t progress8() {
-    return progress / 256;
+    return progress >> 8;
   }
 };
 
